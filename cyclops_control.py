@@ -30,7 +30,7 @@ def setup_control(invals):
 
     control = make_control()
 
-    opts, args = getopt.gnu_getopt(invals, '', ['Nx=', 'timestep=', 'final_time=', 'outFileStem=', 'delta=', 'eps1=', 'eps2=', 'eps3=', 'eps4=', 'eps5=', 'eps6=', 'eps7=', 'eps8=', 'nokernel'])
+    opts, args = getopt.gnu_getopt(invals, '', ['Nx=', 'timestep=', 'final_time=', 'outFileStem=', 'delta=', 'epsilon=', 'eps1=', 'eps2=', 'eps3=', 'eps4=', 'eps5=', 'eps6=', 'eps7=', 'eps8=', 'nokernel'])
     for o, a in opts:
         if o in ("--Nx"):
             control['Nx'] = int(a)
@@ -42,6 +42,8 @@ def setup_control(invals):
             control['outFileStem'] = a
         elif o in ("--delta"):
             control['delta'] = int(a)
+        elif o in ("--epsilon"):
+            control['epsilon'] = float(a)
         elif o in ("--eps1"):
             control['epses'].append(float(a))
         elif o in ("--eps2"):
