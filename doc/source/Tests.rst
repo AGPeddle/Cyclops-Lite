@@ -2,20 +2,21 @@ Tests
 =====
 
 We currently provide two tests. These are both invocable from the command-line
-interface and include the MPI-based parallelism.
+interface.
 
 These tests also provide examples of calling Cyclops.
 
-Gaussian_test.sh
+APinT.sh
 ----------------
 
 This is the first test to be run and should converge very quickly. An initially
-stationary Gaussian height field is assumed on a coarse spatial grid.
+stationary Gaussian height field is assumed on a coarse spatial grid. The test
+runs the APinT parallel-in-time algorithm for the 1-D RSWE.
 
-E_run.sh
+EnKF.sh
 --------
 
-This test is much more computationally intensive. It implements the initially
-geostrophically balanced initial condition from `The Coherent Structures of
-Shallow-Water Turbulence` (Polvani et al, 1994) on a 64 x 64 grid. This provides
-an example of the use of Cyclops with externally-generated initial conditions.
+This test is much more computationally intensive. It creates the necessary
+data to simulate a data assimilation cycle and then performs this cycle, using
+the coarse propagator for the prediction step and the ensemble Kalman filter
+for the update step.

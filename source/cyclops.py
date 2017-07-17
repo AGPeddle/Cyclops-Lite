@@ -1,9 +1,9 @@
 #!/usr/bin/env/ python3
 """
-This code implements the solution to the Rotating Shallow Water Equations (RSWE). The
-primary goal is to investigate Asymptotic Parallel-in-Time (APinT) methods.
+This code implements the Asymptotic Parallel in Time (APinT) algorithm
+for the 1-D rotating shallow water equations, following Haut and Wingate (2014).
 
-The only input requirement for this code is the control dictionary, which is located at the top of the program.
+Control and parameterisation of the code is through the cyclops_control library.
 
 The structure of the program is based on the Fourier Spectral code Morgawr, by AGP. A significant
 amount of the numerical code is courtesy of Dr. Terry Haut of LANL.
@@ -14,7 +14,7 @@ Algorithm
 
 2) Call solver method for timestepping
 
-2a) Data is written to file at each coarse timestep
+3) Output writing
 
 | Author: Adam G. Peddle, Terry Haut
 | Contact: ap553@exeter.ac.uk
@@ -52,11 +52,15 @@ def APinT_solver(control, st, expInt, u_init):
 
     **Parameters**
 
-    None
+    - `control` : a control object
+    - `st` : the spectral toolbox object
+    - `expInt` : an exponential integrator object
+    - `u_init` : the initial conditions in Fourier space, np.array(3,Nx), (u,v,h)
 
     **Returns**
 
-    Dumps errors to file and screen
+    - `errs` : A tuple containing lists of the L_infty and L_2 errors vs iteration, respectively
+    - `U_hat_new` : The solution after convergence (np.array(Nt, 3, Nx))
 
     **See Also**
 
@@ -175,17 +179,21 @@ if __name__ == "__main__":
         control['HMM_T0'] = control['coarse_timestep']/(control['epsilon']**0.2)
     control['HMM_M_bar'] = max(25, int(80*control['HMM_T0']))
 
+    #Create exponential integrator object
     expInt = ExponentialIntegrator(control)
 
     # Set up initial (truth) field
     ICs = cyclops_base.h_init(control)
 
+    # Set up spectral toolbox
     st = SpectralToolbox(control['Nx'], control['Lx'])
 
+    # ICs should be in Fourier space for APinT algo as implemented
     for k in range(3):
         IC_hat = np.zeros((3, control['Nx']), dtype=complex)
         IC_hat[k,:] = st.forward_fft(ICs[k,:])
 
+    # Kernel. Call to solver.
     errs, U_hat_new = APinT_solver(control, st, expInt, IC_hat)
 
     # Post-convergence, handle output

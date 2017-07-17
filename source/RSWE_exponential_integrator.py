@@ -1,24 +1,61 @@
 #!/usr/bin/env/ python3
 """
-This code implements the solution to the Rotating Shallow Water Equations (RSWE). The
-primary goal is to investigate Asymptotic Parallel-in-Time (APinT) methods.
+This module implements the solution to the exponential integrator for the linear operator
+of the rotating shallow water equations as used by pypint.
 
-The only input requirement for this code is the control dictionary, which is located at the top of the program.
+Consider the RSWE, neglecting the nonlinear terms. We may write this as:
 
-The structure of the program is based on the Fourier Spectral code Morgawr, by AGP. A significant
-amount of the numerical code is courtesy of Dr. Terry Haut of LANL.
+.. math :: \\frac{\\partial u}{\\partial t} = Lu
 
-Algorithm
----------
-1) Set up relevant (Python) objects for computation to progress (spectral_toolbox, control, exponential_integrator)
+We may solve this via an integrating factor method, yielding:
 
-2) Call solver method for timestepping
+.. math:: u_{t} = e^{tL}u_{0}
 
-2a) Data is written to file at each coarse timestep
+to which we may freely apply various choices of timestepping. The exponential integrator
+then requires the efficient computation of the matrix exponential. We write the matrix
+exponential in the form:
 
-| Author: Adam G. Peddle, Terry Haut
+.. math:: e^{tL} = r_{k}^{\\alpha} e^{t\\omega_{k}^{\\alpha}} (r_{k}^{\\alpha})^{-1}
+
+where :math:`r_{k}^{\\alpha}` is a matrix containing the eigenvectors of the linear
+operator (for a corresponding wavenumber, k, as we are working in Fourier space) and
+:math:`\\omega_{k}^{\\alpha}` is a vector containing the associated eigenvalues of
+the linear operator, such that:
+
+.. math:: \\omega_{k}^{\\alpha} = \\alpha\\sqrt{1+F^{-1}k^{2}}
+
+with :math:`\\alpha = -1, 0, 1` and where F is the deformation radius. This
+reduces the problem to an easier problem of finding the eigenvalues/eigenvectors
+and applying these. These are pre-computed for speed as they will not change
+over the course of the computation for constant gravity, rotation, and water depth.
+
+Classes
+-------
+-`ExponentialIntegrator` : Implements the exponential integrator for the RSWE
+
+Notes
+-----
+We write the linear operator, L, as:
+
+.. math:: L = \\left[\\begin{array}{ccc}
+                0 & -1 & F^{-1}\\partial_{x} \\\\
+               1 & 0 & 0 \\\\
+               F^{-1}\\partial_{x} & 0 & 0 \\end{array}\\right]
+
+which becomes, in Fourier space:
+
+.. math:: L = \\left[\\begin{array}{ccc}
+                0 & -1 & 2\\pi i F^{-1} k_{1}/L \\\\
+               1 & 0 & 0 \\\\
+               2\\pi i F_{-1} k_{1}/L & 0 & 0 \\end{array}\\right]
+
+See Also
+--------
+numpy
+
+| Authors: Terry Haut, Adam G. Peddle
 | Contact: ap553@exeter.ac.uk
-| Version: 1.0
+| Version: 2.0
 """
 
 import numpy as np

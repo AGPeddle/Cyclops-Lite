@@ -1,52 +1,110 @@
+#!/usr/bin/env/ python3
+"""
+An example script to set up an ensemble of initial conditions for the EnKF
+code given in EnKF and faro. Also simulates measurement data via a fine solve
+followed by addition of white noise.
+
+Choice of parameters should be made through the cyclops_control library.
+
+Classes
+-------
+- `Ensemble_Kalman` : Implements the filter.
+
+| Author: Adam G. Peddle
+| Contact: ap553@exeter.ac.uk
+| Version: 1.0
+"""
+
 import numpy as np
-import matplotlib.pyplot as plt
 import pickle
 import sys
 import os
-import cyclops_control
 import RSWE_direct
+import cyclops_control
 from sklearn.gaussian_process import GaussianProcessRegressor
 from RSWE_exponential_integrator import ExponentialIntegrator
 from spectral_toolbox_1D import SpectralToolbox
 
 class Noiser:
     """
+    A wrapper on a normal distribution to add white (in space and time) noise
+    to a given vector.
+
+    **Attributes**
+    - `mean` : the mean of the noise (should be 0 if it's white)
+    - `var` : the variance of the noise
+
+    **Methods**
+    - `apply` : Adds noise to a given vector
 
     """
+
     def __init__(self, mean = 0, var = 0.05):
         self.mean = mean
         self.var = var
 
     def apply(self, data_in):
+        """
+        Adds white noise to a given vector
+
+        **Parameters**
+        - `data_in` : The input vector
+
+        **Returns**
+        - The data plus noise
+
+        """
+
         N = data_in.shape
         s = np.random.normal(self.mean, self.var, N)
 
         return data_in + s
 
-
 def h_init(control):
     """
-    This function sets up the initial condition for the height field.
+    This function sets up a two-humped Gaussian initial condition for the height field.
 
     **Returns**
     -`h_space` : The initial height field
     """
 
+    # Spatial domain
     x_grid = control['Lx']*np.arange(0,control['Nx'])/float(control['Nx'])
-    h_space = np.exp(-2.0 * ((x_grid-control['Lx']/3.0)**2)) + 1.5*np.exp(-3.0 * ((x_grid-2.0*control['Lx']/3.0)**2))
-    return h_space
 
+    # Height field
+    h_space = np.exp(-2.0 * ((x_grid-control['Lx']/3.0)**2)) + \
+              1.5*np.exp(-3.0 * ((x_grid-2.0*control['Lx']/3.0)**2))
+
+    return h_space
 
 def main(control):
     """
+    Main program to create necessary data for a sequential data assimilation run
+    with the faro script.
+
+    **Parameters**
+    - `control` : a control object
+
+    **Outputs**
+    Output is via a pickled dict in <outFileStem._assim_data.dat. Contents are:
+
+    - `x_meas` : The indices of the measurement locations
+    - `final_time` : The length of the coarse timestep cycle used
+    - `t` : Temporal measurement locations
+    - `u` : The measurements derived from simulation + noise
+    - `ICs` : Initial condition ensemble via Gaussian process regressor
+    - `size` : The ensemble size
 
     """
+
+    # Housekeeping
     if 'working_dir' in control: os.chdir(control['working_dir'])
     control['solver'] = "fine_propagator"
     station_spacing = control['meas_spacing']
     n_inits = control['ensemble_size']
-    control['final_time'] = control['final_time']*control['assim_cycle_length']
+    control['final_time'] = control['coarse_timestep']*control['assim_cycle_length']
 
+    # Set up spatial domain
     x_grid = control['Lx']*np.arange(0,control['Nx'])/float(control['Nx'])
     x_sample = np.append(np.arange(0,x_grid.shape[0],station_spacing),-1)
 

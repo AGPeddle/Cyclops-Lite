@@ -142,14 +142,6 @@ class SpectralToolbox:
         for k in range(-self.N//2,self.N//2):
             self.deriv_mat_x1[k+self.N//2] = 1j * k * self.factor
 
-        """
-        # Create derivative matrices
-        if self.pad:
-            self.deriv_mat_x1 = np.zeros((2*self.N), dtype = complex)
-            for k in range(-self.N,self.N):
-                self.deriv_mat_x1[k+self.N] = 1j * k * self.factor
-        """
-
     def dealias_pad(self, A):
         """
         Pads the spectrum with zeros in high frequencies for aliasing control.
@@ -319,18 +311,18 @@ class SpectralToolbox:
         To reduce loops and make the implementation simpler, these modes are contained in the derivatrive matrices, which take the form:
 
         .. math:: \\text{deriv_mat_x1} = \\left[\\begin{array}{cccc}
-                        iBk_{1} & iBk_{1} & \cdots & iBk_{1} \\\\
-                       iBk_{2} & iBk_{2} & \cdots & iBk_{2}\\\\
+                        iBk_{1} & iBk_{1} & \\cdots & iBk_{1} \\\\
+                       iBk_{2} & iBk_{2} & \\cdots & iBk_{2}\\\\
                        \\vdots & \\vdots & \\ddots & \\vdots \\\\
-                       iBk_{n} & iBk_{n} & \cdots & iBk_{n} \\end{array}\\right]
+                       iBk_{n} & iBk_{n} & \\cdots & iBk_{n} \\end{array}\\right]
 
         and:
 
         .. math:: \\text{deriv_mat_x2} = \\left[\\begin{array}{cccc}
-                        iBk_{1} & iBk_{2} & \cdots & iBk_{n} \\\\
-                       iBk_{1} & iBk_{2} & \cdots & iBk_{n}\\\\
+                        iBk_{1} & iBk_{2} & \\cdots & iBk_{n} \\\\
+                       iBk_{1} & iBk_{2} & \\cdots & iBk_{n}\\\\
                        \\vdots & \\vdots & \\ddots & \\vdots \\\\
-                       iBk_{1} & iBk_{2} & \cdots & iBk_{n} \\end{array}\\right]
+                       iBk_{1} & iBk_{2} & \\cdots & iBk_{n} \\end{array}\\right]
 
         **Example**
 

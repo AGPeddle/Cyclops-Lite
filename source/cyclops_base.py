@@ -1,27 +1,23 @@
 #!/usr/bin/env/ python3
 """
-This code implements the solution to the Rotating Shallow Water Equations (RSWE). The
-primary goal is to investigate Asymptotic Parallel-in-Time (APinT) methods.
+Library of miscellaneous helper functions for Cyclops init/admin tasks.
 
-The only input requirement for this code is the control dictionary, which is located at the top of the program.
 
-The structure of the program is based on the Fourier Spectral code Morgawr, by AGP. A significant
-amount of the numerical code is courtesy of Dr. Terry Haut of LANL.
-
-Algorithm
+Functions
 ---------
-1) Set up relevant (Python) objects for computation to progress (spectral_toolbox, control, exponential_integrator)
 
-2) Call solver method for timestepping
+- `read_ICs` : Read initial conditions from the Polvani experiments
+- `geopotential_transform` : Transform the height field from (u,v,h) to skew-Hermitian (u,v,phi)
+- `inv_geopotential_transform` : Transform the height field from skew-Hermitian (u,v,phi) to (u,v,h)
+- `compute_L_2_error` : Compute the L_2 error between two vectors
+- `compute_L_infty_error` : Compute the L_infty (sup-norm) error between two vectors
+- `h_init` : Generate an initially stationary Gaussian height field for testing
 
-2a) Data is written to file at each coarse timestep
-
-| Author: Adam G. Peddle, Terry Haut
+| Authors: Adam G. Peddle
 | Contact: ap553@exeter.ac.uk
 | Version: 1.0
 """
 
-import logging
 import time
 import sys
 import os
@@ -30,13 +26,14 @@ import pickle
 from spectral_toolbox_1D import SpectralToolbox
 import numpy as np
 from numpy import fft
-import cyclops_control
-
-import matplotlib.pyplot as plt
 
 def h_init(control, width = 2.0):
     """
-    This function sets up the initial condition for the height field.
+    This function sets up the initial Gaussian condition for the height field.
+
+    **Parameters**
+    - `control` : control object
+    - `width` : does the same thing as variance, without normalisation
 
     **Returns**
     -`h_space` : The initial height field
@@ -77,6 +74,32 @@ def compute_errors(U_hat_old, U_hat_new):
     return errors
 
 def compute_L_2_error(U_hat_ref, U_hat_approx):
+    """
+    Computes and returns the L_2 error.
+
+    The L_2 error is defined as:
+
+    .. math:: L_{2} = \\frac{\\sqrt{\\sum e^{2}}}{\\sqrt{\\sum u_{ref}^{2}}}
+
+    where e is the absolute error.
+
+    The errors are computed in Fourier space but returned in real space. The returned error
+    is the L_2 error of all three variables together.
+
+    The reference solution will generally be the solution at the previous iteration, which
+    is used for measuring convergence.
+
+    **Parameters**
+
+    - `U_hat_ref` : the solution at the previous timestep (or a reference solution)
+    - `U_hat_approx` : the solution at the current timestep
+    - `st` : spectral toolbox object
+
+    **Returns**
+
+    - `error` : The computed L_2 error
+    """
+
     error = abs(np.reshape(U_hat_approx[:,:] - U_hat_ref[:,:], np.prod(np.shape(U_hat_ref[:,:]))))
     error = np.sqrt(np.sum(error**2))
     norm_val = abs(np.reshape(U_hat_ref[:,:], np.prod(np.shape(U_hat_ref[:,:]))))
@@ -85,6 +108,30 @@ def compute_L_2_error(U_hat_ref, U_hat_approx):
     return error
 
 def compute_L_infty_error(U_hat_ref, U_hat_approx):
+    """
+    Compute the L_infty error at a given timestep.
+
+    The L_infty error is defined as:
+
+    .. math:: L_{\\infty} = \\max\\left|\\frac{U_{new}-U_{old}}{U_{old}}\\right|
+
+    The errors are computed in Fourier space but returned in real space. The returned error
+    is the greatest of the errors computed for both velocities and the height.
+
+    The reference solution will generally be the solution at the previous iteration, which
+    is used for measuring convergence.
+
+    **Parameters**
+
+    - `U_hat_ref` : the solution at the previous timestep (or a reference solution)
+    - `U_hat_approx` : the solution at the current timestep
+    - `st` : spectral toolbox object
+
+    **Returns**
+
+    - `error` : The computed L_infty error
+    """
+
     N = np.shape(U_hat_ref)[-1]
     sign_mat2 = (-1)**np.arange(N)
     v1_hat = U_hat_ref[0,:]

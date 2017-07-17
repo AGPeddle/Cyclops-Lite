@@ -1,39 +1,96 @@
+#!/usr/bin/env/ python3
+"""
+This module provides a dictionary through which all computational and physical
+parameters are organised and accessed. All have semi-reasonable default values
+and may be chosen by the user via the command-line interface.
+
+Functions
+---------
+- `make_control` : Creates a control object with the default values
+- `setup_control` : Updates the default control object with user selections
+
+Parameters
+----------
+- `Nx` : Number of gridpoints along one direction. Domain is Nx X Nx square <int>
+- `Nt` : Number of coarse timesteps for APinT computation <int>
+- `coarse_timestep` : Coarse timestep length <float>
+- `fine_timestep` : Fine timestep length <float>
+- `Lx` : Side length of the square domain <float>
+- `conv_tol` : The convergence criterion for iterative error <float>
+- `HMM_T0` : The length of the averaging window (absolute) <float>
+- `mu` : Hyperviscosity coefficient <float>
+- `outFileStem` : Optional stem for output filenames <str>
+- `f_naught` : Coriolis parameters <float>
+- `H_naught` : Mean water depth <float>
+- `gravity` : Gravitational acceleration, g <float>
+- `force_gain` : The gain term for stochastic forcing <float>
+- `epsilon` : Scale separation <float>
+- `working_dir` : The working directory <str>
+- `ensemble_size`: The number of ensemble members for data assimilation <int>
+- `assim_cycle_length` : The number of coarse timesteps between EnKF update steps <int>
+- `meas_spacing` : The spacing of spatial measurement points for EnKF, such that
+                   data is known at 0, meas_spacing, 2*meas_spacing, ...
+- `N_cycles` : The number of prediction/update cycles to be performed.
+
+| Author: Adam G. Peddle
+| Contact: ap553@exeter.ac.uk
+| Version: 1.0
+"""
+
 import sys
 import getopt
 import numpy as np
 
 def make_control():
+    """
+    Initialises the control object to the default values. New defaults
+    should be placed here.
+
+    **Returns**
+    - `control` : Default control object
+    """
+
     control = dict()
 
+    # General Parameters
     control['Nx'] = 64  # Number of grid points. Domain is square.
-    control['Nt'] = 64  # Number of coarse timesteps taken
+    control['Lx'] = 2.0*np.pi  # Side length of square domain
     control['coarse_timestep'] = 0.1  # Coarse timestep
     control['fine_timestep'] = 0.1/500  # Coarse timestep
-    control['final_time'] = 1.0  # Final time for computation
-    control['Lx'] = 2.0*np.pi  # Side length of square domain
-    control['conv_tol'] = 01.0e-6  # Tolerance for iterative convergence
     control['solver'] = 'fine_propagator'
-
-    control['epsilon'] = 1.0
-    control['HMM_T0'] = None  # Used in wave averaging kernel
-    control['force_gain'] = 0.0  # Gain for stochastic forcing
-
-    control['deformation_radius'] = 1.  # Rossby deformation radius (must be O(1))
-    control['epsilon'] = 1.0  # Epsilon (Rossby) can be 0.01, 0.1, or 1.0
-    control['mu'] = 1.0e-4  # Hyperviscosity parameter
-
     control['outFileStem'] = 'test'  # Stem for creation of output files
     control['working_dir'] = None
-    control['gauss_width'] = 2.0
 
-    control['ensemble_size'] = 32
-    control['assim_cycle_length'] = 25
-    control['meas_spacing'] = 7
-    control['N_cycles'] = 6
+    # Physical Parameters
+    control['epsilon'] = 1.0  # Scale separation
+    control['deformation_radius'] = 1.  # Rossby deformation radius (must be O(1))
+    control['mu'] = 1.0e-4  # Hyperviscosity parameter
+
+    # APinT Parameters
+    control['Nt'] = 64  # Number of coarse timesteps taken
+    control['conv_tol'] = 01.0e-6  # Tolerance for iterative convergence
+    control['HMM_T0'] = None  # Used in wave averaging kernel
+
+    # Data Assimilation Parameters
+    control['ensemble_size'] = 32  # Number of ensemble members
+    control['assim_cycle_length'] = 25  # Number of coarse timesteps between updates
+    control['meas_spacing'] = 7  # Spatial spacing of measured data
+    control['N_cycles'] = 6  # Number of total predict/update EnKF cycles
+    control['force_gain'] = 0.0  # Gain for stochastic forcing
 
     return control
 
 def setup_control(invals):
+    """
+    Creates and updates the default control object with user selections.
+    Input should come via stdin and relies on sys.argv for parsing.
+
+    **Parameters**
+    - `invals` : command-line input values in Unix-style
+
+    **Returns**
+    - `control` : Default control object
+    """
 
     control = make_control()
 
