@@ -1,0 +1,5 @@
+Faro
+====
+
+.. automodule:: faro
+   :members:
