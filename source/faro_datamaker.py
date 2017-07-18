@@ -13,7 +13,7 @@ Classes
 Functions
 ---------
 - `h_init_twohump` : Creates an initial double-Gaussian height field
-- `main` : the main method to create the data and dump it via a pickled dict
+- `setup_data` : the main method to create the data and dump it via a pickled dict
 
 | Author: Adam G. Peddle
 | Contact: ap553@exeter.ac.uk
@@ -86,7 +86,7 @@ def h_init_twohump(control):
 
     return h_space
 
-def main(control):
+def setup_data(control):
     """
     Main program to create necessary data for a sequential data assimilation run
     with the faro script.
@@ -167,4 +167,4 @@ def main(control):
 
 if __name__ == "__main__":
     control_in = cyclops_control.setup_control(sys.argv[1:])
-    main(control_in)
+    setup_data(control_in)
