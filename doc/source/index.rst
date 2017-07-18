@@ -16,6 +16,7 @@ Contents:
    :maxdepth: 4
 
    Introduction
+   faro_datamaker
    cyclops
    cyclops_control
    rswe_direct
@@ -23,7 +24,6 @@ Contents:
    cyclops_base
    spectral_toolbox
    faro
-   faro_datamaker
    EnKF
    Tests
 
