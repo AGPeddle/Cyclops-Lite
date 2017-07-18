@@ -26,7 +26,7 @@ import sys
 import os
 import RSWE_direct
 import cyclops_control
-#from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process import GaussianProcessRegressor
 from RSWE_exponential_integrator import ExponentialIntegrator
 from spectral_toolbox_1D import SpectralToolbox
 
@@ -91,7 +91,7 @@ def main(control):
     - `control` : a control object
 
     **Outputs**
-    Output is via a pickled dict in <outFileStem._assim_data.dat. Contents are:
+    Output is via a pickled dict in outFileStem_assim_data.dat. Contents are:
 
     - `x_meas` : The indices of the measurement locations
     - `final_time` : The length of the coarse timestep cycle used
