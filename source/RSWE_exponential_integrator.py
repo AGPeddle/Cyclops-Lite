@@ -31,10 +31,12 @@ over the course of the computation for constant gravity, rotation, and water dep
 
 Classes
 -------
+
 -`ExponentialIntegrator` : Implements the exponential integrator for the RSWE
 
 Notes
 -----
+
 We write the linear operator, L, as:
 
 .. math:: L = \\left[\\begin{array}{ccc}
@@ -51,6 +53,7 @@ which becomes, in Fourier space:
 
 See Also
 --------
+
 numpy
 
 | Authors: Terry Haut, Adam G. Peddle
@@ -118,9 +121,11 @@ class ExponentialIntegrator:
         The eigenvalues returned are those for the QG formulation of the RSWE.
 
         **Parameters**
+
         -`k1, k2` : The wavenumber pair for which the eigenvalue is desired
 
         **Returns**
+
         -`eVals` : The computed eigenvalues
 
         """
@@ -138,9 +143,11 @@ class ExponentialIntegrator:
         an analytical solution.
 
         **Parameters**
+
         -`k1, k2` : The wavenumber pair for which the eigenvalue is desired
 
         **Returns**
+
         -`A` : The computed eigenvector array
 
         """

@@ -32,10 +32,12 @@ def h_init(control, width = 2.0):
     This function sets up the initial Gaussian condition for the height field.
 
     **Parameters**
+
     - `control` : control object
     - `width` : does the same thing as variance, without normalisation
 
     **Returns**
+
     -`h_space` : The initial height field
     """
 
@@ -64,6 +66,7 @@ def compute_errors(U_hat_old, U_hat_new):
     - `errors` : a list containing the L_inf and L_2 errors, respectively
 
     **See Also**
+
     `compute_L_infty_error`, `compute_L_2_error`
 
     """

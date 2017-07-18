@@ -8,10 +8,12 @@ intended for use on a two-dimensional domain of equally-spaced gridpoints.
 
 Classes
 -------
+
 - `SpectralToolbox` -- Superclass to implement standard techniques of spectral methods
 
 Miscellaneous Functions for Unit Testing
 ----------------------------------------
+
 - `test_func` -- Test function for unit testing
 - `check_derivatives`
 - `check_jacobian`
@@ -22,6 +24,7 @@ All of the above compare the computed solution to an analytical solution.
 
 Notes
 -----
+
 1) Invoking this module from the command line without any arguments will perform unit tests on the methods contained within.
 
 2) The Fourier representation used is:
@@ -61,6 +64,7 @@ libraries installed. If not, it falls back to NumPy's native implementation.
 
 See also
 --------
+
 numpy.fft, numpy, FFTW, PyFFTW
 
 | Author: Adam G. Peddle

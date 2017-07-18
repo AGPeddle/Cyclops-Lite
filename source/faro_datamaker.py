@@ -8,11 +8,13 @@ Choice of parameters should be made through the cyclops_control library.
 
 Classes
 -------
+
 - `Noiser` : Adds white noise to a known vector
 
 Functions
 ---------
-- `h_init' : Creates an initial double-Gaussian height field
+
+- `h_init` : Creates an initial double-Gaussian height field
 - `main` : the main method to create the data and dump it via a pickled dict
 
 | Author: Adam G. Peddle
@@ -36,10 +38,12 @@ class Noiser:
     to a given vector.
 
     **Attributes**
+
     - `mean` : the mean of the noise (should be 0 if it's white)
     - `var` : the variance of the noise
 
     **Methods**
+
     - `apply` : Adds noise to a given vector
 
     """
@@ -53,11 +57,12 @@ class Noiser:
         Adds white noise to a given vector
 
         **Parameters**
+
         - `data_in` : The input vector
 
         **Returns**
-        - The data plus noise
 
+        - The data plus noise
         """
 
         N = data_in.shape
@@ -70,6 +75,7 @@ def h_init(control):
     This function sets up a two-humped Gaussian initial condition for the height field.
 
     **Returns**
+
     -`h_space` : The initial height field
     """
 
@@ -88,9 +94,11 @@ def main(control):
     with the faro script.
 
     **Parameters**
+
     - `control` : a control object
 
     **Outputs**
+
     Output is via a pickled dict in outFileStem_assim_data.dat. Contents are:
 
     - `x_meas` : The indices of the measurement locations

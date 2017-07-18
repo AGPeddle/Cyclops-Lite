@@ -6,11 +6,13 @@ and may be chosen by the user via the command-line interface.
 
 Functions
 ---------
+
 - `make_control` : Creates a control object with the default values
 - `setup_control` : Updates the default control object with user selections
 
 Parameters
 ----------
+
 - `Nx` : Number of gridpoints along one direction. Domain is Nx X Nx square <int>
 - `Nt` : Number of coarse timesteps for APinT computation <int>
 - `coarse_timestep` : Coarse timestep length <float>
@@ -47,6 +49,7 @@ def make_control():
     should be placed here.
 
     **Returns**
+
     - `control` : Default control object
     """
 
@@ -86,9 +89,11 @@ def setup_control(invals):
     Input should come via stdin and relies on sys.argv for parsing.
 
     **Parameters**
+
     - `invals` : command-line input values in Unix-style
 
     **Returns**
+
     - `control` : Default control object
     """
 
