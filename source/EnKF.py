@@ -29,6 +29,8 @@ import time
 
 class Ensemble_Kalman:
     """
+    This class implements the update step of the ensemble Kalman filter. Once
+    initialised, the point of access for the user is through the apply method.
 
     **Attributes**
 
