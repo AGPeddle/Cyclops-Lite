@@ -1,5 +1,5 @@
 Faro Datamaker
 ==============
 
-.. automodule:: cyclops
+.. automodule:: faro_datamaker
    :members:

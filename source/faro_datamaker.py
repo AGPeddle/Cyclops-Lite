@@ -1,12 +1,49 @@
 #!/usr/bin/env/python3
 """
 An example script to set up an ensemble of initial conditions for the EnKF
+code given in EnKF and faro. Also simulates measurement data via a fine solve
+followed by addition of white noise.
+
+Choice of parameters should be made through the cyclops_control library.
+
+Classes
+-------
+- `Noiser` : Adds white noise to a known vector
+
+Functions
+---------
+- `h_init_twohump` : Creates an initial double-Gaussian height field
+- `main` : the main method to create the data and dump it via a pickled dict
+
+| Author: Adam G. Peddle
+| Contact: ap553@exeter.ac.uk
+| Version: 1.0
 """
+
+import numpy as np
+import pickle
+import sys
+import os
+import RSWE_direct
+import cyclops_control
+from sklearn.gaussian_process import GaussianProcessRegressor
+from RSWE_exponential_integrator import ExponentialIntegrator
+from spectral_toolbox_1D import SpectralToolbox
 
 class Noiser:
     """
     A wrapper on a normal distribution to add white (in space and time) noise
     to a given vector.
+
+    **Attributes**
+
+    - `mean` : the mean of the noise (should be 0 if it's white)
+    - `var` : the variance of the noise
+
+    **Methods**
+
+    - `apply` : Adds noise to a given vector
+
     """
 
     def __init__(self, mean = 0, var = 0.05):
@@ -16,6 +53,14 @@ class Noiser:
     def apply(self, data_in):
         """
         Adds white noise to a given vector
+
+        **Parameters**
+
+        - `data_in` : The input vector
+
+        **Returns**
+
+        - The data plus noise
         """
 
         N = data_in.shape
@@ -23,9 +68,13 @@ class Noiser:
 
         return data_in + s
 
-def h_init(control):
+def h_init_twohump(control):
     """
     This function sets up a two-humped Gaussian initial condition for the height field.
+
+    **Returns**
+
+    -`h_space` : The initial height field
     """
 
     # Spatial domain
@@ -41,6 +90,22 @@ def main(control):
     """
     Main program to create necessary data for a sequential data assimilation run
     with the faro script.
+
+    **Parameters**
+
+    - `control` : a control object
+
+    **Outputs**
+
+    Output is via a pickled dict in outFileStem_assim_data.dat. Contents are:
+
+    - `x_meas` : The indices of the measurement locations
+    - `final_time` : The length of the coarse timestep cycle used
+    - `t` : Temporal measurement locations
+    - `u` : The measurements derived from simulation + noise
+    - `ICs` : Initial condition ensemble via Gaussian process regressor
+    - `size` : The ensemble size
+
     """
 
     # Housekeeping
@@ -65,7 +130,7 @@ def main(control):
 
     # Set up initial (truth) field
     truth = np.zeros((control['N_cycles'] + 1, 3, control['Nx']))
-    truth[0, 2, :] = h_init(control)
+    truth[0, 2, :] = h_init_twohump(control)
 
     # Propagate it through N_cycles
     for i in range(control['N_cycles']):
