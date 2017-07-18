@@ -17,7 +17,7 @@ import os
 import shlex
 import mock
 
-MOCK_MODULES = ['numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'sklearn', 'sklearn.gaussian_process']
+MOCK_MODULES = ['numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'GaussianProcessRegressor', 'sklearn', 'sklearn.gaussian_process']
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
 

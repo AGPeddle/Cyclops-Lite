@@ -8,7 +8,12 @@ Choice of parameters should be made through the cyclops_control library.
 
 Classes
 -------
-- `Ensemble_Kalman` : Implements the filter.
+- `Noiser` : Adds white noise to a known vector
+
+Functions
+---------
+- `h_init' : Creates an initial double-Gaussian height field
+- `main` : the main method to create the data and dump it via a pickled dict
 
 | Author: Adam G. Peddle
 | Contact: ap553@exeter.ac.uk
